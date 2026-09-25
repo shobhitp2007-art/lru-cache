@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>LRU Cache Visualizer</title>
+
+    <!-- Connect CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <div class="app-shell">
+
+        <!-- ================= HEADER ================= -->
+
+        <header class="topbar">
+
+            <div class="brand">
+
+                <div class="brand-mark">
+                    LRU
+                </div>
+
+                <div>
+                    <h1>LRU Cache Visualizer</h1>
+
+                    <p>
+                        Data Structures Project · Interactive Learning Dashboard
+                    </p>
+                </div>
+
+            </div>
+
+            <div class="status">
+
+                <span class="status-dot"></span>
+
+                Simulation Ready
+
+            </div>
+
+        </header>
+
+
+        <!-- ================= MAIN CONTENT ================= -->
+
+        <main class="grid">
+
+
+            <!-- ================= LEFT PANEL ================= -->
+
+            <section class="panel main-panel">
+
+                <!-- Hero -->
+
+                <div class="hero">
+
+                    <div>
+
+                        <h2>
+                            See the cache think in real time.
+                        </h2>
+
+                        <p>
+                            Explore how
+                            <strong>GET</strong>,
+                            <strong>PUT</strong> and
+                            <strong>DELETE</strong>
+                            operations change the LRU order.
+                            The visual model represents a
+                            Hash Map working together with a
+                            Doubly Linked List.
+                        </p>
+
+                    </div>
+
+                    <div class="tag">
+                        O(1) GET · O(1) PUT
+                    </div>
+
+                </div>
+
+
+                <!-- ================= CONTROLS ================= -->
+
+                <div class="controls">
+
+                    <!-- Capacity -->
+
+                    <div class="field">
+
+                        <label for="capacity">
+                            Capacity
+                        </label>
+
+                        <input
+                            id="capacity"
+                            type="number"
+                            min="1"
+                            max="10"
+                            value="4"
+                        >
+
+                    </div>
+
+
+                    <!-- Key -->
+
+                    <div class="field">
+
+                        <label for="key">
+                            Key
+                        </label>
+
+                        <input
+                            id="key"
+                            type="text"
+                            maxlength="12"
+                            placeholder="e.g. A"
+                        >
+
+                    </div>
+
+
+                    <!-- Value -->
+
+                    <div class="field">
+
+                        <label for="value">
+                            Value
+                        </label>
+
+                        <input
+                            id="value"
+                            type="text"
+                            maxlength="20"
+                            placeholder="e.g. 100"
+                        >
+
+                    </div>
+
+
+                    <!-- Buttons -->
+
+                    <div class="actions">
+
+                        <button
+                            class="btn btn-primary"
+                            onclick="putItem()"
+                        >
+                            PUT
+                        </button>
+
+
+                        <button
+                            class="btn"
+                            onclick="getItem()"
+                        >
+                            GET
+                        </button>
+
+
+                        <button
+                            class="btn btn-soft"
+                            onclick="deleteItem()"
+                        >
+                            DELETE
+                        </button>
+
+
+                        <button
+                            class="btn btn-danger"
+                            onclick="resetCache()"
+                        >
+                            RESET
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================= CACHE HEADER ================= -->
+
+                <div class="section-head">
+
+                    <h3>
+                        Cache Memory
+                    </h3>
+
+                    <span>
+                        LEFT = MOST RECENT · RIGHT = LEAST RECENT
+                    </span>
+
+                </div>
+
+
+                <!-- ================= CACHE ================= -->
+
+                <div class="cache-wrap">
+
+                    <div class="cache-topline">
+
+                        <div id="cacheCount">
+                            0 / 4 slots used
+                        </div>
+
+
+                        <div class="legend">
+
+                            <div class="legend-item">
+
+                                <span class="legend-dot mru"></span>
+
+                                MRU
+
+                            </div>
+
+
+                            <div class="legend-item">
+
+                                <span class="legend-dot lru"></span>
+
+                                LRU
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Cache nodes generated by JavaScript -->
+
+                    <div
+                        class="cache-track"
+                        id="cacheTrack"
+                    >
+
+                    </div>
+
+                </div>
+
+
+                <!-- ================= STATISTICS ================= -->
+
+                <div class="stats">
+
+
+                    <!-- Hits -->
+
+                    <div class="stat">
+
+                        <div class="stat-label">
+                            Cache Hits
+                        </div>
+
+                        <div
+                            class="stat-value"
+                            id="hits"
+                        >
+                            0
+                        </div>
+
+                        <div class="stat-note">
+                            Successful GETs
+                        </div>
+
+                    </div>
+
+
+                    <!-- Misses -->
+
+                    <div class="stat">
+
+                        <div class="stat-label">
+                            Cache Misses
+                        </div>
+
+                        <div
+                            class="stat-value"
+                            id="misses"
+                        >
+                            0
+                        </div>
+
+                        <div class="stat-note">
+                            Key not found
+                        </div>
+
+                    </div>
+
+
+                    <!-- Evictions -->
+
+                    <div class="stat">
+
+                        <div class="stat-label">
+                            Evictions
+                        </div>
+
+                        <div
+                            class="stat-value"
+                            id="evictions"
+                        >
+                            0
+                        </div>
+
+                        <div class="stat-note">
+                            Removed by LRU
+                        </div>
+
+                    </div>
+
+
+                    <!-- Hit Rate -->
+
+                    <div class="stat">
+
+                        <div class="stat-label">
+                            Hit Rate
+                        </div>
+
+                        <div
+                            class="stat-value"
+                            id="hitRate"
+                        >
+                            0%
+                        </div>
+
+                        <div class="stat-note">
+                            Hits / total GETs
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- ================= RIGHT PANEL ================= -->
+
+            <aside class="panel side-panel">
+
+
+                <h3 class="side-title">
+                    Data Structures Used
+                </h3>
+
+
+                <p class="side-sub">
+
+                    The UI is a visualization layer;
+                    the core project is the data structure
+                    implementation underneath it.
+
+                </p>
+
+
+
+                <!-- HASH MAP -->
+
+                <div class="data-structure">
+
+                    <div class="ds-head">
+
+                        <div class="ds-name">
+                            1. Hash Map
+                        </div>
+
+                        <div class="complexity">
+                            O(1) LOOKUP
+                        </div>
+
+                    </div>
+
+
+                    <p class="ds-desc">
+
+                        Stores key → node references so a
+                        cache item can be found quickly.
+
+                    </p>
+
+
+                    <div class="mini-code">
+
+                        A → Node A<br>
+                        B → Node B<br>
+                        C → Node C
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- DOUBLY LINKED LIST -->
+
+                <div class="data-structure">
+
+                    <div class="ds-head">
+
+                        <div class="ds-name">
+                            2. Doubly Linked List
+                        </div>
+
+                        <div class="complexity">
+                            O(1) MOVE
+                        </div>
+
+                    </div>
+
+
+                    <p class="ds-desc">
+
+                        Maintains usage order.
+                        Head is MRU and Tail is LRU.
+
+                    </p>
+
+
+                    <div class="mini-code">
+
+                        HEAD ⇄ A ⇄ C ⇄ B ⇄ TAIL
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- LRU POLICY -->
+
+                <div class="data-structure">
+
+                    <div class="ds-head">
+
+                        <div class="ds-name">
+                            3. LRU Policy
+                        </div>
+
+                        <div class="complexity">
+                            EVICT TAIL
+                        </div>
+
+                    </div>
+
+
+                    <p class="ds-desc">
+
+                        When the cache is full,
+                        the least recently used item
+                        is removed first.
+
+                    </p>
+
+
+                    <div class="mini-code">
+
+                        PUT(D) → remove LRU → insert D at HEAD
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- ================= HISTORY ================= -->
+
+                <div class="history">
+
+                    <div class="section-head">
+
+                        <h3>
+                            Operation History
+                        </h3>
+
+                        <span id="historyCount">
+                            0 actions
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        class="history-list"
+                        id="historyList"
+                    >
+
+                        <div
+                            class="empty-state"
+                            style="min-height:120px"
+                        >
+
+                            <div>
+
+                                <strong>
+                                    No operations yet
+                                </strong>
+
+                                <span>
+                                    Try PUT A → 100 to begin.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </aside>
+
+        </main>
+
+
+
+        <!-- ================= BOTTOM SECTION ================= -->
+
+        <section class="bottom-grid">
+
+
+            <!-- SYSTEM FLOW -->
+
+            <div class="panel info-panel">
+
+                <h3>
+                    How the system flows
+                </h3>
+
+
+                <div class="flow">
+
+
+                    <div class="flow-box">
+
+                        User Action
+
+                        <small>
+                            GET / PUT / DELETE
+                        </small>
+
+                    </div>
+
+
+                    <div class="flow-arrow">
+                        →
+                    </div>
+
+
+                    <div class="flow-box">
+
+                        LRU Engine
+
+                        <small>
+                            Map + Doubly Linked List
+                        </small>
+
+                    </div>
+
+
+                    <div class="flow-arrow">
+                        →
+                    </div>
+
+
+                    <div class="flow-box">
+
+                        Updated View
+
+                        <small>
+                            Cache + Statistics
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ALGORITHM -->
+
+            <div class="panel info-panel">
+
+                <h3>
+                    LRU Operation Logic
+                </h3>
+
+
+                <div class="algorithm">
+
+
+                    <div class="algo">
+
+                        <strong>
+                            GET
+                        </strong>
+
+                        <p>
+
+                            Find key → move node to
+                            front → count hit/miss.
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="algo">
+
+                        <strong>
+                            PUT
+                        </strong>
+
+                        <p>
+
+                            Update or insert →
+                            move to front →
+                            evict tail if full.
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="algo">
+
+                        <strong>
+                            DELETE
+                        </strong>
+
+                        <p>
+
+                            Remove node from list
+                            and delete its map entry.
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="algo">
+
+                        <strong>
+                            RESET
+                        </strong>
+
+                        <p>
+
+                            Clear the current cache
+                            state and statistics.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= FOOTER ================= -->
+
+        <div class="footer">
+
+            <span>
+                LRU Cache Visualizer · Phase 1 UI / Proof of Concept
+            </span>
+
+            <span>
+                Frontend Prototype · Backend can be connected later
+            </span>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- Toast notification -->
+
+    <div
+        class="toast"
+        id="toast"
+    ></div>
+
+
+    <!-- Connect JavaScript -->
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
